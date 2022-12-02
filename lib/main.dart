@@ -1,8 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter_browser/browser.dart';
+import 'package:flutter_browser/models/browser_model.dart';
+import 'package:flutter_browser/models/webview_model.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 
 import '../screens/dapp.dart';
 import '../screens/open_app_pin_failed.dart';
@@ -97,17 +101,31 @@ void main() async {
     return true;
   };
   final pref = await Hive.openBox(secureStorageKey);
-
   runApp(
-    Phoenix(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => WebViewModel(),
+        ),
+        ChangeNotifierProxyProvider<WebViewModel, BrowserModel>(
+          update: (context, webViewModel, browserModel) {
+            browserModel.setCurrentWebViewModel(webViewModel);
+            return browserModel;
+          },
+          create: (BuildContext context) => BrowserModel(),
+        ),
+      ],
+      child: Phoenix(
         child: RestartWidget(
-      child: MyApp(
-        userDarkMode: pref.get(darkModekey, defaultValue: false),
-        locale: Locale.fromSubtags(
-          languageCode: pref.get(languageKey, defaultValue: 'en'),
+          child: MyApp(
+            userDarkMode: pref.get(darkModekey, defaultValue: false),
+            locale: Locale.fromSubtags(
+              languageCode: pref.get(languageKey, defaultValue: 'en'),
+            ),
+          ),
         ),
       ),
-    )),
+    ),
   );
 }
 
@@ -254,7 +272,7 @@ class _MyHomePageState extends State<MyHomePage> {
     await Future.delayed(const Duration(milliseconds: 2500));
 
     Get.off(
-      nextWidget,
+      Browser(),
       transition: Transition.leftToRight,
     );
   }
