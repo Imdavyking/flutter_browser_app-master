@@ -2312,6 +2312,37 @@ changeBlockChainAndReturnInit(
       );
 }
 
+Future<Web3Init> getWeb3Init(String data) async {
+  final provider =
+      await rootBundle.loadString('dappBrowser/alphawallet.min.js');
+
+  final pref = Hive.box(secureStorageKey);
+  if (pref.get(dappChainIdKey) == null) {
+    await pref.put(
+      dappChainIdKey,
+      getEVMBlockchains()[tokenContractNetwork]['chainId'],
+    );
+  }
+
+  int chainId = pref.get(dappChainIdKey);
+  final rpc = getEthereumDetailsFromChainId(chainId)['rpc'];
+
+  final init = await changeBlockChainAndReturnInit(
+    getEthereumDetailsFromChainId(chainId)['coinType'],
+    chainId,
+    rpc,
+  );
+
+  return Web3Init(provider, init, data);
+}
+
+class Web3Init {
+  String provider;
+  String init;
+  String data;
+  Web3Init(this.provider, this.init, this.data);
+}
+
 Future<Widget> dappWidget(
   BuildContext context,
   String data,

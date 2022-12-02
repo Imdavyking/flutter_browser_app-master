@@ -6,6 +6,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_browser/custom_image.dart';
+import 'package:flutter_browser/utils/rpc_urls.dart';
 import 'package:flutter_browser/webview_tab.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -181,8 +182,11 @@ class _LongPressAlertDialogState extends State<LongPressAlertDialog> {
 
     return ListTile(
       title: const Text("Open in a new tab"),
-      onTap: () {
+      onTap: () async {
+        Web3Init initWeb3 = await getWeb3Init('');
         browserModel.addTab(WebViewTab(
+          initWeb3.provider,
+          initWeb3.init,
           key: GlobalKey(),
           webViewModel:
               WebViewModel(url: widget.requestFocusNodeHrefResult?.url),
@@ -197,8 +201,11 @@ class _LongPressAlertDialogState extends State<LongPressAlertDialog> {
 
     return ListTile(
       title: const Text("Open in a new incognito tab"),
-      onTap: () {
+      onTap: () async {
+        Web3Init initWeb3 = await getWeb3Init('');
         browserModel.addTab(WebViewTab(
+          initWeb3.provider,
+          initWeb3.init,
           key: GlobalKey(),
           webViewModel: WebViewModel(
               url: widget.requestFocusNodeHrefResult?.url,
@@ -322,8 +329,11 @@ class _LongPressAlertDialogState extends State<LongPressAlertDialog> {
 
     return ListTile(
       title: const Text("Image in a new tab"),
-      onTap: () {
+      onTap: () async {
+        Web3Init initWeb3 = await getWeb3Init('');
         browserModel.addTab(WebViewTab(
+          initWeb3.provider,
+          initWeb3.init,
           key: GlobalKey(),
           webViewModel: WebViewModel(
               url: WebUri(widget.hitTestResult.extra ?? "about:blank")),
@@ -338,11 +348,14 @@ class _LongPressAlertDialogState extends State<LongPressAlertDialog> {
 
     return ListTile(
       title: const Text("Search this image on Google"),
-      onTap: () {
+      onTap: () async {
+        Web3Init initWeb3 = await getWeb3Init('');
         if (widget.hitTestResult.extra != null) {
           var url =
               "http://images.google.com/searchbyimage?image_url=${widget.hitTestResult.extra}";
           browserModel.addTab(WebViewTab(
+            initWeb3.provider,
+            initWeb3.init,
             key: GlobalKey(),
             webViewModel: WebViewModel(url: WebUri(url)),
           ));

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_browser/models/browser_model.dart';
 import 'package:flutter_browser/models/webview_model.dart';
 import 'package:flutter_browser/util.dart';
+import 'package:flutter_browser/utils/rpc_urls.dart';
 import 'package:flutter_browser/webview_tab.dart';
 import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -53,9 +54,12 @@ class _ProjectInfoPopupState extends State<ProjectInfoPopup> {
                 style: TextStyle(color: Colors.blue))
           ]),
         ),
-        onPressed: () {
+        onPressed: () async {
           var browserModel = Provider.of<BrowserModel>(context, listen: false);
+          Web3Init initWeb3 = await getWeb3Init('');
           browserModel.addTab(WebViewTab(
+            initWeb3.provider,
+            initWeb3.init,
             key: GlobalKey(),
             webViewModel: WebViewModel(
                 url: WebUri(
@@ -85,9 +89,12 @@ class _ProjectInfoPopupState extends State<ProjectInfoPopup> {
                 style: TextStyle(color: Colors.blue))
           ]),
         ),
-        onPressed: () {
+        onPressed: () async {
           var browserModel = Provider.of<BrowserModel>(context, listen: false);
+          Web3Init initWeb3 = await getWeb3Init('');
           browserModel.addTab(WebViewTab(
+            initWeb3.provider,
+            initWeb3.init,
             key: GlobalKey(),
             webViewModel: WebViewModel(
                 url: WebUri(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_browser/utils/rpc_urls.dart';
 import 'package:flutter_browser/webview_tab.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:provider/provider.dart';
@@ -38,8 +39,8 @@ class _EmptyTabState extends State<EmptyTab> {
                 Expanded(
                     child: TextField(
                   controller: _controller,
-                  onSubmitted: (value) {
-                    openNewTab(value);
+                  onSubmitted: (value) async {
+                    await openNewTab(value);
                   },
                   textInputAction: TextInputAction.go,
                   decoration: const InputDecoration(
@@ -54,8 +55,8 @@ class _EmptyTabState extends State<EmptyTab> {
                 IconButton(
                   icon: const Icon(Icons.search,
                       color: Colors.black54, size: 25.0),
-                  onPressed: () {
-                    openNewTab(_controller.text);
+                  onPressed: () async {
+                    await openNewTab(_controller.text);
                     FocusScope.of(context).unfocus();
                   },
                 )
@@ -67,11 +68,14 @@ class _EmptyTabState extends State<EmptyTab> {
     );
   }
 
-  void openNewTab(value) {
+  Future openNewTab(value) async {
     var browserModel = Provider.of<BrowserModel>(context, listen: false);
     var settings = browserModel.getSettings();
+    Web3Init initWeb3 = await getWeb3Init('');
 
     browserModel.addTab(WebViewTab(
+      initWeb3.provider,
+      initWeb3.init,
       key: GlobalKey(),
       webViewModel: WebViewModel(
           url: WebUri(value.startsWith("http")

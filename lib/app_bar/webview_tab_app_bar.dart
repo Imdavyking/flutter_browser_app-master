@@ -14,6 +14,7 @@ import 'package:flutter_browser/pages/developers/main.dart';
 import 'package:flutter_browser/pages/settings/main.dart';
 import 'package:flutter_browser/tab_popup_menu_actions.dart';
 import 'package:flutter_browser/util.dart';
+import 'package:flutter_browser/utils/rpc_urls.dart';
 import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:path_provider/path_provider.dart';
@@ -132,7 +133,7 @@ class _WebViewTabAppBarState extends State<WebViewTabAppBar>
 
     return IconButton(
       icon: const Icon(Icons.home),
-      onPressed: () {
+      onPressed: () async {
         if (webViewController != null) {
           var url =
               settings.homePageEnabled && settings.customUrlHomePage.isNotEmpty
@@ -140,7 +141,7 @@ class _WebViewTabAppBarState extends State<WebViewTabAppBar>
                   : WebUri(settings.searchEngine.url);
           webViewController.loadUrl(urlRequest: URLRequest(url: url));
         } else {
-          addNewTab();
+          await addNewTab();
         }
       },
     );
@@ -158,7 +159,7 @@ class _WebViewTabAppBarState extends State<WebViewTabAppBar>
       child: Stack(
         children: <Widget>[
           TextField(
-            onSubmitted: (value) {
+            onSubmitted: (value) async {
               var url = WebUri(value.trim());
               if (!url.scheme.startsWith("http") &&
                   !Util.isLocalizedContent(url)) {
@@ -168,7 +169,7 @@ class _WebViewTabAppBarState extends State<WebViewTabAppBar>
               if (webViewController != null) {
                 webViewController.loadUrl(urlRequest: URLRequest(url: url));
               } else {
-                addNewTab(url: url);
+                await addNewTab(url: url);
                 webViewModel.url = url;
               }
             },
@@ -233,7 +234,7 @@ class _WebViewTabAppBarState extends State<WebViewTabAppBar>
           : Container(),
       InkWell(
         key: tabInkWellKey,
-        onLongPress: () {
+        onLongPress: () async {
           final RenderBox box =
               tabInkWellKey.currentContext.findRenderObject() as RenderBox;
           if (box == null) {
@@ -274,16 +275,16 @@ class _WebViewTabAppBarState extends State<WebViewTabAppBar>
                       ]),
                     );
                   }).toList())
-              .then((value) {
+              .then((value) async {
             switch (value) {
               case TabPopupMenuActions.CLOSE_TABS:
                 browserModel.closeAllTabs();
                 break;
               case TabPopupMenuActions.NEW_TAB:
-                addNewTab();
+                await addNewTab();
                 break;
               case TabPopupMenuActions.NEW_INCOGNITO_TAB:
-                addNewIncognitoTab();
+                await addNewIncognitoTab();
                 break;
             }
           });
@@ -709,10 +710,10 @@ class _WebViewTabAppBarState extends State<WebViewTabAppBar>
 
     switch (choice) {
       case PopupMenuActions.NEW_TAB:
-        addNewTab();
+        await addNewTab();
         break;
       case PopupMenuActions.NEW_INCOGNITO_TAB:
-        addNewIncognitoTab();
+        await addNewIncognitoTab();
         break;
       case PopupMenuActions.FAVORITES:
         showFavorites();
@@ -760,7 +761,7 @@ class _WebViewTabAppBarState extends State<WebViewTabAppBar>
     }
   }
 
-  void addNewTab({WebUri url}) {
+  Future addNewTab({WebUri url}) async {
     var browserModel = Provider.of<BrowserModel>(context, listen: false);
     var settings = browserModel.getSettings();
 
@@ -768,13 +769,17 @@ class _WebViewTabAppBarState extends State<WebViewTabAppBar>
         ? WebUri(settings.customUrlHomePage)
         : WebUri(settings.searchEngine.url);
 
+    Web3Init web3init = await getWeb3Init('');
+
     browserModel.addTab(WebViewTab(
+      web3init.provider,
+      web3init.init,
       key: GlobalKey(),
       webViewModel: WebViewModel(url: url),
     ));
   }
 
-  void addNewIncognitoTab({WebUri url}) {
+  Future addNewIncognitoTab({WebUri url}) async {
     var browserModel = Provider.of<BrowserModel>(context, listen: false);
     var settings = browserModel.getSettings();
 
@@ -782,7 +787,11 @@ class _WebViewTabAppBarState extends State<WebViewTabAppBar>
         ? WebUri(settings.customUrlHomePage)
         : WebUri(settings.searchEngine.url);
 
+    Web3Init web3init = await getWeb3Init('');
+
     browserModel.addTab(WebViewTab(
+      web3init.provider,
+      web3init.init,
       key: GlobalKey(),
       webViewModel: WebViewModel(url: url, isIncognitoMode: true),
     ));
@@ -829,9 +838,9 @@ class _WebViewTabAppBarState extends State<WebViewTabAppBar>
                         subtitle: Text(favorite.url?.toString() ?? "",
                             maxLines: 2, overflow: TextOverflow.ellipsis),
                         isThreeLine: true,
-                        onTap: () {
+                        onTap: () async {
+                          await addNewTab(url: favorite.url);
                           setState(() {
-                            addNewTab(url: favorite.url);
                             Navigator.pop(context);
                           });
                         },
@@ -960,11 +969,15 @@ class _WebViewTabAppBarState extends State<WebViewTabAppBar>
                 },
               ),
               isThreeLine: true,
-              onTap: () {
+              onTap: () async {
+                Web3Init web3init = await getWeb3Init('');
+
                 if (path != null) {
                   var browserModel =
                       Provider.of<BrowserModel>(context, listen: false);
                   browserModel.addTab(WebViewTab(
+                    web3init.provider,
+                    web3init.init,
                     key: GlobalKey(),
                     webViewModel: WebViewModel(url: WebUri("file://$path")),
                   ));

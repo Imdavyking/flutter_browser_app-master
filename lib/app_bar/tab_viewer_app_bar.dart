@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_browser/models/browser_model.dart';
 import 'package:flutter_browser/models/webview_model.dart';
 import 'package:flutter_browser/pages/settings/main.dart';
+import 'package:flutter_browser/utils/rpc_urls.dart';
 import 'package:flutter_browser/webview_tab.dart';
 import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -37,8 +38,8 @@ class _TabViewerAppBarState extends State<TabViewerAppBar> {
   Widget _buildAddTabButton() {
     return IconButton(
       icon: const Icon(Icons.add),
-      onPressed: () {
-        addNewTab();
+      onPressed: () async {
+        await addNewTab();
       },
     );
   }
@@ -160,13 +161,13 @@ class _TabViewerAppBarState extends State<TabViewerAppBar> {
   void _popupMenuChoiceAction(String choice) async {
     switch (choice) {
       case TabViewerPopupMenuActions.NEW_TAB:
-        Future.delayed(const Duration(milliseconds: 300), () {
-          addNewTab();
+        Future.delayed(const Duration(milliseconds: 300), () async {
+          await addNewTab();
         });
         break;
       case TabViewerPopupMenuActions.NEW_INCOGNITO_TAB:
-        Future.delayed(const Duration(milliseconds: 300), () {
-          addNewIncognitoTab();
+        Future.delayed(const Duration(milliseconds: 300), () async {
+          await addNewIncognitoTab();
         });
         break;
       case TabViewerPopupMenuActions.CLOSE_ALL_TABS:
@@ -182,7 +183,7 @@ class _TabViewerAppBarState extends State<TabViewerAppBar> {
     }
   }
 
-  void addNewTab({WebUri url}) {
+  Future addNewTab({WebUri url}) async {
     var browserModel = Provider.of<BrowserModel>(context, listen: false);
     var settings = browserModel.getSettings();
 
@@ -192,13 +193,17 @@ class _TabViewerAppBarState extends State<TabViewerAppBar> {
 
     browserModel.showTabScroller = false;
 
+    Web3Init web3init = await getWeb3Init('');
+
     browserModel.addTab(WebViewTab(
+      web3init.provider,
+      web3init.init,
       key: GlobalKey(),
       webViewModel: WebViewModel(url: url),
     ));
   }
 
-  void addNewIncognitoTab({WebUri url}) {
+  Future addNewIncognitoTab({WebUri url}) async {
     var browserModel = Provider.of<BrowserModel>(context, listen: false);
     var settings = browserModel.getSettings();
 
@@ -206,9 +211,13 @@ class _TabViewerAppBarState extends State<TabViewerAppBar> {
         ? WebUri(settings.customUrlHomePage)
         : WebUri(settings.searchEngine.url);
 
+    Web3Init web3init = await getWeb3Init('');
+
     browserModel.showTabScroller = false;
 
     browserModel.addTab(WebViewTab(
+      web3init.provider,
+      web3init.init,
       key: GlobalKey(),
       webViewModel: WebViewModel(url: url, isIncognitoMode: true),
     ));

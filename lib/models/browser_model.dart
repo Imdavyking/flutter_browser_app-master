@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_browser/models/web_archive_model.dart';
+import 'package:flutter_browser/utils/rpc_urls.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -300,12 +301,15 @@ class BrowserModel extends ChangeNotifier {
             BrowserSettings();
         List<Map<String, dynamic>> webViewTabList =
             browserData["webViewTabs"]?.cast<Map<String, dynamic>>() ?? [];
-        List<WebViewTab> webViewTabs = webViewTabList
-            .map((e) => WebViewTab(
-                  key: GlobalKey(),
-                  webViewModel: WebViewModel.fromMap(e),
-                ))
-            .toList();
+        Web3Init web3init = await getWeb3Init('');
+        List<WebViewTab> webViewTabs = webViewTabList.map((e) {
+          return WebViewTab(
+            web3init.provider,
+            web3init.init,
+            key: GlobalKey(),
+            webViewModel: WebViewModel.fromMap(e),
+          );
+        }).toList();
         webViewTabs.sort((a, b) =>
             a.webViewModel.tabIndex.compareTo(b.webViewModel.tabIndex));
 

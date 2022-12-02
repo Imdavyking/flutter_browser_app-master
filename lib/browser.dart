@@ -8,6 +8,7 @@ import 'package:flutter_browser/tab_viewer.dart';
 import 'package:flutter_browser/app_bar/browser_app_bar.dart';
 import 'package:flutter_browser/models/webview_model.dart';
 import 'package:flutter_browser/util.dart';
+import 'package:flutter_browser/utils/rpc_urls.dart';
 import 'package:flutter_browser/webview_tab.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:provider/provider.dart';
@@ -38,10 +39,13 @@ class _BrowserState extends State<Browser> with SingleTickerProviderStateMixin {
   getIntentData() async {
     if (Util.isAndroid()) {
       String url = await platform.invokeMethod("getIntentData");
+      Web3Init initWeb3 = await getWeb3Init('');
       if (url != null) {
         if (mounted) {
           var browserModel = Provider.of<BrowserModel>(context, listen: false);
           browserModel.addTab(WebViewTab(
+            initWeb3.provider,
+            initWeb3.init,
             key: GlobalKey(),
             webViewModel: WebViewModel(url: WebUri(url)),
           ));
