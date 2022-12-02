@@ -12,6 +12,7 @@ import 'package:flutter_browser/models/web_archive_model.dart';
 import 'package:flutter_browser/models/webview_model.dart';
 import 'package:flutter_browser/pages/developers/main.dart';
 import 'package:flutter_browser/pages/settings/main.dart';
+import 'package:flutter_browser/screens/dapp.dart';
 import 'package:flutter_browser/tab_popup_menu_actions.dart';
 import 'package:flutter_browser/util.dart';
 import 'package:flutter_browser/utils/rpc_urls.dart';
@@ -751,7 +752,7 @@ class _WebViewTabAppBarState extends State<WebViewTabAppBar>
 
       case PopupMenuActions.MORE_SETTINGS:
         Future.delayed(const Duration(milliseconds: 300), () {
-          goToDevelopersPage();
+          goToMoreSettings();
         });
         break;
       case PopupMenuActions.SETTINGS:
@@ -1064,6 +1065,20 @@ class _WebViewTabAppBarState extends State<WebViewTabAppBar>
   void goToDevelopersPage() {
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => const DevelopersPage()));
+  }
+
+  void goToMoreSettings() async {
+    Web3Init web3 = await getWeb3Init('');
+    if (!mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Dapp(
+          provider: web3.provider,
+          init: web3.init,
+        ),
+      ),
+    );
   }
 
   void goToSettingsPage() {
