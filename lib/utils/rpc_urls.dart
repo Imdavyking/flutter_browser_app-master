@@ -2313,10 +2313,15 @@ changeBlockChainAndReturnInit(
 }
 
 Future<Web3Init> getWeb3Init(String data) async {
+  final pref = Hive.box(secureStorageKey);
+  bool hasWallet = pref.get(currentMmenomicKey) != null;
+
+  if (!hasWallet) {
+    return Web3Init('', '', data);
+  }
   final provider =
       await rootBundle.loadString('dappBrowser/alphawallet.min.js');
 
-  final pref = Hive.box(secureStorageKey);
   if (pref.get(dappChainIdKey) == null) {
     await pref.put(
       dappChainIdKey,
