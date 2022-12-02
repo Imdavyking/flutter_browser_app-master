@@ -748,6 +748,12 @@ class _WebViewTabAppBarState extends State<WebViewTabAppBar>
           goToDevelopersPage();
         });
         break;
+
+      case PopupMenuActions.MORE_SETTINGS:
+        Future.delayed(const Duration(milliseconds: 300), () {
+          goToDevelopersPage();
+        });
+        break;
       case PopupMenuActions.SETTINGS:
         Future.delayed(const Duration(milliseconds: 300), () {
           goToSettingsPage();
