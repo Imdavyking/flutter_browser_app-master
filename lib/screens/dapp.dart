@@ -81,7 +81,7 @@ class _DappState extends State<Dapp> {
                             width: 10,
                           ),
                           Text(
-                            AppLocalizations.of(context).settings,
+                            AppLocalizations.of(context).info,
                           )
                         ],
                       ),
