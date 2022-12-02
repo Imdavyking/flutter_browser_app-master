@@ -57,6 +57,7 @@ class _WebViewTabState extends State<WebViewTab> with WidgetsBindingObserver {
 
   @override
   void initState() {
+    initJs = widget.init;
     WidgetsBinding.instance.addObserver(this);
     super.initState();
 
