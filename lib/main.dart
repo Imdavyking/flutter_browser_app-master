@@ -10,13 +10,13 @@ import 'package:provider/provider.dart';
 import 'browser.dart';
 
 // ignore: non_constant_identifier_names
-late final String WEB_ARCHIVE_DIR;
+ final String WEB_ARCHIVE_DIR;
 // ignore: non_constant_identifier_names
-late final double TAB_VIEWER_BOTTOM_OFFSET_1;
+ final double TAB_VIEWER_BOTTOM_OFFSET_1;
 // ignore: non_constant_identifier_names
-late final double TAB_VIEWER_BOTTOM_OFFSET_2;
+ final double TAB_VIEWER_BOTTOM_OFFSET_2;
 // ignore: non_constant_identifier_names
-late final double TAB_VIEWER_BOTTOM_OFFSET_3;
+ final double TAB_VIEWER_BOTTOM_OFFSET_3;
 // ignore: constant_identifier_names
 const double TAB_VIEWER_TOP_OFFSET_1 = 0.0;
 // ignore: constant_identifier_names
@@ -53,7 +53,7 @@ void main() async {
         ),
         ChangeNotifierProxyProvider<WebViewModel, BrowserModel>(
           update: (context, webViewModel, browserModel) {
-            browserModel!.setCurrentWebViewModel(webViewModel);
+            browserModel.setCurrentWebViewModel(webViewModel);
             return browserModel;
           },
           create: (BuildContext context) => BrowserModel(),

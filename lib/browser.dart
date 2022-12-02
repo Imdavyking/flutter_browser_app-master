@@ -17,7 +17,7 @@ import 'empty_tab.dart';
 import 'models/browser_model.dart';
 
 class Browser extends StatefulWidget {
-  const Browser({Key? key}) : super(key: key);
+  const Browser({Key key}) : super(key: key);
 
   @override
   State<Browser> createState() => _BrowserState();
@@ -37,7 +37,7 @@ class _BrowserState extends State<Browser> with SingleTickerProviderStateMixin {
 
   getIntentData() async {
     if (Util.isAndroid()) {
-      String? url = await platform.invokeMethod("getIntentData");
+      String url = await platform.invokeMethod("getIntentData");
       if (url != null) {
         if (mounted) {
           var browserModel = Provider.of<BrowserModel>(context, listen: false);
@@ -114,7 +114,7 @@ class _BrowserState extends State<Browser> with SingleTickerProviderStateMixin {
 
           if (webViewModel != null && webViewModel.tabIndex != null) {
             setState(() {
-              browserModel.closeTab(webViewModel.tabIndex!);
+              browserModel.closeTab(webViewModel.tabIndex);
             });
             if (mounted) {
               FocusScope.of(context).unfocus();
@@ -129,7 +129,7 @@ class _BrowserState extends State<Browser> with SingleTickerProviderStateMixin {
             FocusScopeNode currentFocus = FocusScope.of(context);
             if (!currentFocus.hasPrimaryFocus &&
                 currentFocus.focusedChild != null) {
-              currentFocus.focusedChild!.unfocus();
+              currentFocus.focusedChild.unfocus();
             }
           },
           child: Scaffold(
@@ -212,7 +212,7 @@ class _BrowserState extends State<Browser> with SingleTickerProviderStateMixin {
 
                 var url = webViewTab.webViewModel.url;
                 var faviconUrl = webViewTab.webViewModel.favicon != null
-                    ? webViewTab.webViewModel.favicon!.url
+                    ? webViewTab.webViewModel.favicon.url
                     : (url != null && ["http", "https"].contains(url.scheme)
                         ? Uri.parse("${url.origin}/favicon.ico")
                         : null);
@@ -287,7 +287,7 @@ class _BrowserState extends State<Browser> with SingleTickerProviderStateMixin {
                                   if (webViewTab.webViewModel.tabIndex !=
                                       null) {
                                     browserModel.closeTab(
-                                        webViewTab.webViewModel.tabIndex!);
+                                        webViewTab.webViewModel.tabIndex);
                                     if (browserModel.webViewTabs.isEmpty) {
                                       browserModel.showTabScroller = false;
                                     }
