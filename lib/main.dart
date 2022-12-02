@@ -257,22 +257,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (hasWallet && !defaultSecurity) {
       nextWidget = const OpenAppPinFailed();
-    } else if (hasWallet) {
-      nextWidget = await dappWidget(
-        context,
-        walletURL,
-      );
     } else {
-      nextWidget = const Dapp(
-        provider: '',
-        init: '',
-        data: walletURL,
-      );
+      nextWidget = const Browser();
     }
+
     await Future.delayed(const Duration(milliseconds: 2500));
 
     Get.off(
-      Browser(),
+      nextWidget,
       transition: Transition.leftToRight,
     );
   }
