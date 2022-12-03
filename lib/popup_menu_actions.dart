@@ -2,7 +2,9 @@ class PopupMenuActions {
   // ignore: constant_identifier_names
   static const String NEW_TAB = "New tab";
   // ignore: constant_identifier_names
-  static const String MORE_SETTINGS = "More Settings";
+  static const String INFO = "Info";
+  // ignore: constant_identifier_names
+  static const String WALLET = "Wallet";
   // ignore: constant_identifier_names
   static const String NEW_INCOGNITO_TAB = "New incognito tab";
   // ignore: constant_identifier_names
@@ -34,7 +36,8 @@ class PopupMenuActions {
     FIND_ON_PAGE,
     DESKTOP_MODE,
     SETTINGS,
-    MORE_SETTINGS,
+    INFO,
+    WALLET,
     DEVELOPERS,
     INAPPWEBVIEW_PROJECT,
   ];

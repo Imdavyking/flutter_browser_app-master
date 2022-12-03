@@ -13,11 +13,14 @@ import 'package:flutter_browser/models/webview_model.dart';
 import 'package:flutter_browser/pages/developers/main.dart';
 import 'package:flutter_browser/pages/settings/main.dart';
 import 'package:flutter_browser/screens/dapp.dart';
+import 'package:flutter_browser/screens/settings.dart';
 import 'package:flutter_browser/tab_popup_menu_actions.dart';
 import 'package:flutter_browser/util.dart';
 import 'package:flutter_browser/utils/rpc_urls.dart';
 import 'package:flutter_font_icons/flutter_font_icons.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:share_extend/share_extend.dart';
@@ -28,6 +31,10 @@ import '../custom_popup_dialog.dart';
 import '../custom_popup_menu_item.dart';
 import '../popup_menu_actions.dart';
 import '../project_info_popup.dart';
+import '../screens/main_screen.dart';
+import '../screens/security.dart';
+import '../screens/wallet_main_body.dart';
+import '../utils/app_config.dart';
 import '../webview_tab.dart';
 
 class WebViewTabAppBar extends StatefulWidget {
@@ -750,9 +757,27 @@ class _WebViewTabAppBarState extends State<WebViewTabAppBar>
         });
         break;
 
-      case PopupMenuActions.MORE_SETTINGS:
-        Future.delayed(const Duration(milliseconds: 300), () {
-          goToMoreSettings();
+      case PopupMenuActions.INFO:
+        Future.delayed(const Duration(milliseconds: 300), () async {
+          await Get.to(const Settings());
+        });
+        break;
+      case PopupMenuActions.WALLET:
+        Future.delayed(const Duration(milliseconds: 300), () async {
+          final pref = Hive.box(secureStorageKey);
+          bool hasWallet = pref.get(currentMmenomicKey) != null;
+
+          bool hasPasscode = pref.get(userUnlockPasscodeKey) != null;
+          Widget dappWidget;
+
+          if (hasWallet) {
+            dappWidget = const WalletMainBody();
+          } else if (hasPasscode) {
+            dappWidget = const MainScreen();
+          } else {
+            dappWidget = const Security();
+          }
+          await Get.to(dappWidget);
         });
         break;
       case PopupMenuActions.SETTINGS:
